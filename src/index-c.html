@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Bootstrap Example</title>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.16.0/umd/popper.min.js"></script>
+  <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+</head>
+<body>
+
+<div class="container">
+  <h2>Basic Table</h2>
+  <p>The .table class adds basic styling (light padding and horizontal dividers) to a table:</p>
+
+  <!-- Vue 템플릿으로 바인딩 -->
+  <div id="app">
+      <list-vue v-bind:rows="rows"></list-vue>
+  </div>
+
+</div>
+
+<!-- ********************** Vue 템플릿 *************************** -->
+<script src="https://cdn.jsdelivr.net/npm/vue@2/dist/vue.js"></script>
+<script src="./list-vue.js?a"></script>
+<!-- //********************** Vue 템플릿 *************************** -->
+
+
+<script src="https://cdn.jsdelivr.net/npm/handlebars@latest/dist/handlebars.js"></script>
+<script src="../external/_w-meta-1.6.1.js"></script>
+<script src="base-page-svc.js"></script>
+<script src="board-notice-svc.js"></script>
+<script>
+  try {
+
+    // #######################################################################################################
+    var ntc = new _W.BindModelAjax(new BoardNoticeService());
+
+    this.isLog = true;  // 디버깅 모드  
+    this.isThrow = true;  // 던지기
+
+    ntc.baseUrl = "http://jns9778.cafe24.com/" + ntc.baseUrl;
+    ntc.list.ajaxSetup.crossDomain = true;
+
+    // 속성 설정
+    ntc.prop["__viewUrl"] = "notice_Viw.asp";
+    ntc.prop['__isGetLoad'] = false;
+    ntc.app = {};
+
+    // 콜백
+    ntc.list.cbOutput = function(p_result) {
+      var entity = p_result['table'];
+      var row_total   = entity['row_total'];
+      
+      ntc.app = new Vue({
+        el: '#app',
+        data: {
+          rows: entity.rows
+        }
+      });
+      ntc.items['_txt_sumCnt'].value      = row_total;
+      ntc.items['_area_page'].value       = page.parser(row_total); 
+    };
+
+    // 이벤트 바인딩
+    $('#btn_Search').click(ntc.fn.searchList);
+      //--------------------------------------------------------------
+    $(document).ready(function () {
+      ntc.init();
+      ntc.fn.procList();
+    });
+    if (this.isLog) console.log("______________ $.ready()");
+
+  } catch (e) {
+    console.log(e);
+  }
+</script>
+
+</body>
+</html>
+
+
+
+
+
